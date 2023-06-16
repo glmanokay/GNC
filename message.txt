@@ -1,0 +1,123 @@
+Claro! Vou adicionar comentários ao código explicando o que cada função faz. Aqui está o código com os comentários:
+
+```python
+def eliminar_recursao_esquerda(glc):
+    # Obtém todas as variáveis da GLC
+    variaveis = glc.keys()
+    
+    # Percorre cada variável
+    for variavel in variaveis:
+        # Obtém as produções correspondentes à variável
+        producoes = glc[variavel]
+        
+        # Listas para armazenar as novas produções e as produções recursivas
+        novas_producoes = []
+        recursivas = []
+        
+        # Verifica cada produção
+        for producao in producoes:
+            # Se a produção começar com a própria variável, é recursiva
+            if producao[0] == variavel:
+                recursivas.append(producao)
+            else:
+                novas_producoes.append(producao)
+        
+        # Se houver produções recursivas
+        if len(recursivas) > 0:
+            # Cria uma nova variável para substituir a recursão à esquerda
+            nova_variavel = variavel + "'"
+            glc[nova_variavel] = []  # Cria uma entrada vazia para a nova variável
+            
+            # Substitui as produções originais pela nova variável
+            for producao in novas_producoes:
+                glc[variavel].remove(producao)  # Remove a produção original
+                glc[variavel].append(producao + nova_variavel)  # Adiciona a produção com a nova variável
+            
+            # Adiciona as produções recursivas com a nova variável
+            for recursiva in recursivas:
+                glc[nova_variavel].append(recursiva[1:] + nova_variavel)
+            
+            # Adiciona a produção vazia (ε) à nova variável
+            glc[nova_variavel].append("ε")
+    
+    return glc
+
+
+def fatorar_producoes(glc):
+    # Obtém todas as variáveis da GLC
+    variaveis = glc.keys()
+    
+    # Percorre cada variável
+    for variavel in variaveis:
+        # Obtém as produções correspondentes à variável
+        producoes = glc[variavel]
+        
+        # Lista para armazenar as produções fatoradas
+        producoes_fatoradas = []
+        
+        # Enquanto houver produções para a variável
+        while len(producoes) > 0:
+            # Obtém a primeira produção
+            producao = producoes[0]
+            
+            # Lista para armazenar as produções com símbolos comuns
+            simbolos_comuns = [producao]
+            
+            # Verifica as demais produções
+            for i in range(1, len(producoes)):
+                # Se começarem com o mesmo símbolo, são fatoradas
+                if producoes[i][0] == producao[0]:
+                    simbolos_comuns.append(producoes[i])
+                else:
+                    break
+            
+            # Se houver produções fatoradas
+            if len(simbolos_comuns) > 1:
+                # Cria uma nova variável para substituir os símbolos comuns
+                nova_variavel = variavel + "'"
+                glc[nova_variavel] = []  # Cria uma entrada vazia para
+
+ a nova variável
+                
+                # Substitui as produções originais pelos símbolos comuns
+                for simbolo in simbolos_comuns:
+                    producoes.remove(simbolo)  # Remove a produção original
+                    glc[nova_variavel].append(simbolo[1:])  # Adiciona o restante da produção à nova variável
+                
+                # Adiciona a nova variável como parte das produções fatoradas
+                producoes_fatoradas.append(producao[0] + nova_variavel)
+            else:
+                # Se não houver fatoração, adiciona a produção original
+                producoes_fatoradas.append(producao)
+                producoes.remove(producao)
+            
+        # Substitui as produções da variável pelas produções fatoradas
+        glc[variavel] = producoes_fatoradas
+    
+    return glc
+
+
+def glc_para_fng(glc):
+    # Aplica a eliminação de recursão à esquerda
+    glc = eliminar_recursao_esquerda(glc)
+    
+    # Aplica a fatoração das produções
+    glc = fatorar_producoes(glc)
+    
+    return glc
+
+
+# Exemplo de uso
+glc_exemplo = {
+    'S': ['Sa', 'A'],
+    'A': ['Sb', 'c']
+}
+
+# Converte a GLC em FNG
+fng = glc_para_fng(glc_exemplo)
+
+# Imprime o resultado
+print(fng)
+```
+
+Espero que isso esclareça o funcionamento de cada função no código!
