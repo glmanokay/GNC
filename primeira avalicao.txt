@@ -1,0 +1,51 @@
+import string
+
+def lexer():
+    source_code = input('Digite o código-fonte: ')  # Solicita ao usuário para digitar o código-fonte
+    
+    if source_code[0].lower() == 'z' or source_code[0].lower() == 'x':
+        raise Exception('A cadeia não é aceitável Pois "Z" ou "X" são reservas do sistema.')
+    
+    if len(source_code) > 10:
+        print('Foram digitados mais de 10 caracteres. Apenas os 10 primeiros serão considerados.')
+        source_code = source_code[:10]  # Limita a entrada aos primeiros 10 caracteres
+    
+    tokens = []  # Lista para armazenar os tokens encontrados
+    current_token = ''  # Variável para construir o token atual
+    
+    for char in source_code:
+        if char.lower() in string.ascii_lowercase and char.lower() not in 'jwkyçhq':
+            if char.lower() in 'aeiou':
+                if current_token and current_token[-1].lower() in 'aeiou':
+                    raise Exception('Não é aceitável o uso de consoantes em sequência')
+                current_token += char
+            else:
+                if current_token and current_token[-1].lower() not in 'aeiou':
+                    raise Exception('Não é aceitável o uso de consoantes em sequência')
+                current_token += char
+        elif char.isdigit():
+            if current_token and not current_token[-1].isalpha():
+                raise Exception('Os números devem estar apenas no início ou no final do token.')
+            current_token += char
+        elif char in 'zx':
+            if current_token or len(source_code) > 1:
+                raise Exception(f'O token {current_token}{char} é reservado para o sistema.')
+            current_token += char
+        else:
+            raise Exception(f'Caractere especial "{char}" não é permitido.')
+    
+    if current_token:
+        tokens.append(current_token)  # Adiciona o último token à lista de tokens
+    
+    return tokens
+
+try:
+    tokens = lexer()
+    
+    if len(tokens) > 10:
+        raise Exception('Número máximo de tokens atômicos alcançado.')  # Verifica se o número de tokens excede o limite de 10
+    
+    for token in tokens:
+        print(f"O seu token '{token}' foi aceito.")  # Exibe os tokens aceitos
+except Exception as e:
+    print(f'Erro: {str(e)}')  # Exibe a mensagem de erro, caso ocorra
